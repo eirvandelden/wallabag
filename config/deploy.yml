@@ -1,5 +1,6 @@
 service: wallabag
-image: wallabag/wallabag:latest
+image: ignore
+
 servers:
   web:
     hosts:
@@ -8,7 +9,7 @@ servers:
 proxy:
   ssl: false
   hosts:
-    - readlater.vandelden.family
+    - readitlater.vandelden.family
 
 registry:
   username: eirvandelden
@@ -19,19 +20,6 @@ builder:
   remote: ssh://root@192.168.1.128
   local: false
   context: "."
-
-env:
-  clear:
-    SYMFONY__ENV__DATABASE_DRIVER: pdo_mysql
-    SYMFONY__ENV__DATABASE_HOST: db
-    SYMFONY__ENV__DATABASE_PORT: "3306"
-    SYMFONY__ENV__DATABASE_NAME: wallabag
-    SYMFONY__ENV__DATABASE_USER: wallabag
-    SYMFONY__ENV__DATABASE_PASSWORD: wallabagpass
-    SYMFONY__ENV__DOMAIN_NAME: https://readlater.vandelden.family
-
-volumes:
-  - /home/app_storage/wallabag_uploads:/var/www/wallabag/web/assets/images
 
 accessories:
   db:
@@ -46,3 +34,18 @@ accessories:
         MYSQL_PASSWORD: wallabagpass
     volumes:
       - /home/app_storage/wallabag/db:/var/lib/mysql
+  wallabag:
+    image: wallabag/wallabag:latest
+    host: 192.168.1.216
+    port: "3000:80"
+    env:
+      clear:
+        SYMFONY__ENV__DATABASE_DRIVER: pdo_mysql
+        SYMFONY__ENV__DATABASE_HOST: wallabag-db
+        SYMFONY__ENV__DATABASE_PORT: "3306"
+        SYMFONY__ENV__DATABASE_NAME: wallabag
+        SYMFONY__ENV__DATABASE_USER: wallabag
+        SYMFONY__ENV__DATABASE_PASSWORD: wallabagpass
+        SYMFONY__ENV__DOMAIN_NAME: https://readitlater.vandelden.family
+    volumes:
+      - /home/app_storage/wallabag_uploads:/var/www/wallabag/web/assets/images
